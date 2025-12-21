@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+git lfs track "*.uasset"
+git lfs track "*.umap"
+git lfs track "*.fbx"
+git lfs track "*.png"
+git lfs track "*.wav"
