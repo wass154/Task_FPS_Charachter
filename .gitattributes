@@ -1,7 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
-git lfs track "*.uasset"
-git lfs track "*.umap"
-git lfs track "*.fbx"
-git lfs track "*.png"
-git lfs track "*.wav"
+# Git LFS tracking for Unreal Engine files
+*.uasset filter=lfs diff=lfs merge=lfs -text
+*.umap filter=lfs diff=lfs merge=lfs -text
+*.fbx filter=lfs diff=lfs merge=lfs -text
