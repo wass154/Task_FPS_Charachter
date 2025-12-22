@@ -117,11 +117,8 @@ EVault UVaultComponent::DecideVaultType(float Height, float Depth) const
 
 /* ================= TRACE ================= */
 
-bool UVaultComponent::CheckVaultableObstacle(
-	FHitResult& Hit,
-	float& OutHeight,
-	float& OutDepth
-)
+bool UVaultComponent::CheckVaultableObstacle(FHitResult& Hit, float& OutHeight, float& OutDepth)
+
 {
 	if (!OwnerCharacter || !Capsule)
 		return false;
@@ -197,9 +194,6 @@ bool UVaultComponent::CheckVaultableObstacle(
 	OutHeight = TopHit.ImpactPoint.Z - Hit.ImpactPoint.Z;
 	VaultHeight = OutHeight;
 
-	/* =====================================================
-	   5) DEPTH TRACE (OPTIONAL)
-	   ===================================================== */
 
 	   /* =====================================================
 		  5) DEPTH TRACE – LANDING SPACE
@@ -210,7 +204,7 @@ bool UVaultComponent::CheckVaultableObstacle(
 	const FVector DepthStart =
 		TopHit.ImpactPoint
 		+ FVector(0.f, 0.f, 20.f)   // above top surface
-		+ WallForward * 30.f;       // past wall edge
+		+ WallForward * 50.f;       // past wall edge
 
 	const FVector DepthEnd =
 		DepthStart - FVector(0.f, 0.f, 350.f);

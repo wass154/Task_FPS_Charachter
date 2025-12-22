@@ -18,6 +18,7 @@ USlideComponent::USlideComponent()
 	// ...
 }
 
+#pragma region Intialization
 void USlideComponent::InitializeSlide()
 {
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
@@ -35,7 +36,9 @@ void USlideComponent::InitializeSlide()
 		TargetCameraZ = InitialCameraZ;
 	}
 }
+#pragma endregion Intialization
 
+#pragma region SlideCoreLogic
 void USlideComponent::StartSlide()
 {
 	if (!CanSlide()) return;
@@ -94,7 +97,9 @@ void USlideComponent::UpdateSlide(float DeltaTime)
 		}
 	}
 }
+#pragma endregion SlideCoreLogic
 
+#pragma region Utulity
 bool USlideComponent::CanSlide() const
 {
 	if (!OwnerCharacter || !OwnerCharacter->GetCharacterMovement()) return false;
@@ -102,6 +107,8 @@ bool USlideComponent::CanSlide() const
 		
 		
 }
+#pragma endregion Utulity
+
 
 // Called when the game starts
 void USlideComponent::BeginPlay()

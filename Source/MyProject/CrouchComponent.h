@@ -27,13 +27,14 @@ public:
 	UPROPERTY()
 	ACharacter* OwnerCharacter;
 
+	/*Components*/
 	UPROPERTY()
 	UCapsuleComponent* Capsule;
 
 	UPROPERTY()
 	UCameraComponent* Camera;
 
-
+	// ===== Intialization =====
 	UFUNCTION(BlueprintCallable,Category="Crouch|Intialize")
 	void IntializeCrouch();
 

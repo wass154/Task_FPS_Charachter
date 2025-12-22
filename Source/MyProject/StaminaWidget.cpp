@@ -8,13 +8,7 @@
 #include "MyTraversalCharachter.h"
 #include "TimerManager.h"
 
-void UStaminaWidget::NativeConstruct()
-{
-	Super::NativeConstruct();
-	InitializeCharacter();
-	PlayAnimation(FadeOut);
-}
-
+#pragma region Intialization
 void UStaminaWidget::InitializeCharacter()
 {
 	OwnerCharacter = Cast<ACharacter>(GetOwningPlayerPawn());
@@ -25,36 +19,24 @@ void UStaminaWidget::InitializeCharacter()
 
 	StaminaComponent = TraversalCharachter->MainComponents->StaminaComp;
 }
+#pragma endregion Intialization
 
-void UStaminaWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	if (!OwnerCharacter || !StaminaComponent || !StaminaProgressBar)
-	{
-		return;
-	}
-
-	UpdateStamina(InDeltaTime);
-	UpdateVisibility();
-
-}
-
+#pragma region StaminaCore
 void UStaminaWidget::UpdateStamina(float DeltaTime)
 {
-	
+
 	float CurrentStamina = StaminaComponent->CurrentStamina;
-	
+
 	float MaxStamina = StaminaComponent->MaxStamina;
 
-	 float TargetPercent = CurrentStamina / MaxStamina;
+	float TargetPercent = CurrentStamina / MaxStamina;
 
 
 
 	SmoothedPercent = FMath::FInterpTo(SmoothedPercent, TargetPercent, DeltaTime, 8.f);
 	StaminaProgressBar->SetPercent(SmoothedPercent);
-	
-	
+
+
 
 
 }
@@ -80,3 +62,28 @@ void UStaminaWidget::UpdateVisibility()
 		}
 	}
 }
+
+#pragma endregion StaminaCore
+
+
+void UStaminaWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+	InitializeCharacter();
+	PlayAnimation(FadeOut);
+}
+
+void UStaminaWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (!OwnerCharacter || !StaminaComponent || !StaminaProgressBar)
+	{
+		return;
+	}
+
+	UpdateStamina(InDeltaTime);
+	UpdateVisibility();
+
+}
+

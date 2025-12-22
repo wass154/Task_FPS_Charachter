@@ -25,6 +25,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Traversal")
 	EMovement TraversalState;
 
+	/*OwnerCharachter*/
 	UPROPERTY(VisibleAnywhere, Category = Charachter)
 	ACharacter* OwningCharacter = nullptr; // Cached reference From PlayerCharachter
 
@@ -35,14 +36,12 @@ public:
 
 
 
-	/* Speed Variables */
+	/*  Variables */
 	UPROPERTY(EditAnywhere,Category="Movement|Speeds")
 	float MaxSpeed;
 
-
 	UPROPERTY(VisibleAnywhere, Category = "Movement|Speeds")
 	float speed;
-
 
 	UPROPERTY(VisibleAnywhere, Category = "Movement|Speeds")
 	float CurrentSpeed;
@@ -53,19 +52,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Movement|Directions")
 	float RightDirectionValue;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement|Input")
-	float GetForwardValue() const;
-
-	/** Get current right input value (can be called from other scripts) */
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement|Input")
-	float GetRightValue() const;
-
-
 	UPROPERTY(EditAnywhere, Category = "Movement|LinearVelocity")
 	FVector Velocity;
 
 	UPROPERTY(EditAnywhere, Category = "Movement|Quaternion")
 	FRotator Rot;
+
 
 
 	
@@ -84,6 +76,14 @@ public:
 
 	UFUNCTION()
 	void UpdateMovementState();
+
+	/*UtulityFunctions*/
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement|Input")
+	float GetForwardValue() const;
+
+	/** Get current right input value (can be called from other scripts) */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement|Input")
+	float GetRightValue() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsPlayerIdle()const;

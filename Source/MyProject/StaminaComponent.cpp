@@ -14,21 +14,9 @@ UStaminaComponent::UStaminaComponent()
 }
 
 
-void UStaminaComponent::StaminaTick(float DeltaTime)
-{
-
-	if (bIsRunning && CanRun())
-	{
-		ConsumeStamina();
-	}
-	else if(!bIsRunning && CurrentStamina<MaxStamina)
-	{
-		RestoreStamina();
-	}
 
 
-}
-
+#pragma region Itialization
 void UStaminaComponent::StaminaIntializer()
 {
 	MaxStamina = 100.f;
@@ -45,7 +33,9 @@ void UStaminaComponent::StaminaIntializer()
 		MoveComp = owner->GetCharacterMovement();
 	}
 }
+#pragma endregion Itialization
 
+#pragma region StaminaCoreLogic
 void UStaminaComponent::StartRunning()
 {
 
@@ -72,17 +62,26 @@ void UStaminaComponent::StopRunning()
 
 }
 
-//return is Run or not 
-bool UStaminaComponent::CanRun() const
+void UStaminaComponent::StaminaTick(float DeltaTime)
 {
-	return CurrentStamina > 0;
+
+	if (bIsRunning && CanRun())
+	{
+		ConsumeStamina();
+	}
+	else if (!bIsRunning && CurrentStamina < MaxStamina)
+	{
+		RestoreStamina();
+	}
+
+
 }
 
 void UStaminaComponent::ConsumeStamina()
 {
 	if (bIsRunning)
 	{
-		CurrentStamina = FMath::Max(0.0f, CurrentStamina - (StaminaDrainRate * GetWorld()->GetDeltaSeconds())); 
+		CurrentStamina = FMath::Max(0.0f, CurrentStamina - (StaminaDrainRate * GetWorld()->GetDeltaSeconds()));
 	}
 	if (CurrentStamina <= 0)
 	{
@@ -99,7 +98,6 @@ void UStaminaComponent::ConsumeStamina()
 	}
 }
 
-
 void UStaminaComponent::RestoreStamina()
 {
 	if (!bIsRunning && bCanRegen)
@@ -107,7 +105,7 @@ void UStaminaComponent::RestoreStamina()
 		bCanRegen = true;
 		CurrentStamina = FMath::Min(MaxStamina, CurrentStamina + (StaminaRegenRate * GetWorld()->GetDeltaSeconds()));
 
-   }
+	}
 }
 
 void UStaminaComponent::StartStaminaRegen()
@@ -115,10 +113,26 @@ void UStaminaComponent::StartStaminaRegen()
 	bCanRegen = true;
 }
 
+
+#pragma endregion StaminaCoreLogic
+
+
+#pragma region Utulity
+//return is Run or not 
+bool UStaminaComponent::CanRun() const
+{
+	return CurrentStamina > 0;
+}
+
+
 float UStaminaComponent::GetStaminaPercentage() const
 {
 	return CurrentStamina > 0 ? (CurrentStamina / MaxStamina) * 100.f : 0.f;
 }
+
+#pragma endregion Utulity
+
+
 
 // Called when the game starts
 void UStaminaComponent::BeginPlay()

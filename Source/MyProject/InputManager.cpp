@@ -18,6 +18,7 @@ UInputManager::UInputManager()
 	// ...
 }
 
+#pragma region Intilazation
 void UInputManager::IntiliazeInput()
 {
 
@@ -40,7 +41,11 @@ void UInputManager::IntiliazeInput()
 	
 
 }
+#pragma endregion Intilazation
 
+
+
+#pragma region InputSetups
 void UInputManager::AddMappingContext(UInputMappingContext* MappingContext, int32 Priority)
 {
 	if (InputSubsystem && MappingContext)
@@ -81,6 +86,7 @@ void UInputManager::InitializeInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+#pragma endregion InputSetups
 
 
 

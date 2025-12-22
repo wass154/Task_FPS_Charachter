@@ -19,6 +19,7 @@ UCrouchComponent::UCrouchComponent()
 	// ...
 }
 
+#pragma region Intialization
 void UCrouchComponent::IntializeCrouch()
 {
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
@@ -40,7 +41,9 @@ void UCrouchComponent::IntializeCrouch()
 	TargetCapsuleHalfHeight = StandingCapsuleHalfHeight;
 	TargetCameraZ = InitialCameraZ;
 }
+#pragma endregion Intialization
 
+#pragma region CoreLogicCrouch
 void UCrouchComponent::StartCrouch()
 {
 	bWantsToCrouch = true;
@@ -124,7 +127,9 @@ void UCrouchComponent::UpdateCrouch(float DeltaTime)
 	
 
 }
+#pragma endregion CoreLogicCrouch
 
+#pragma region Utulity
 bool UCrouchComponent::CanUnCrouch() const
 {
 	if (!Capsule || !OwnerCharacter)
@@ -166,6 +171,7 @@ bool UCrouchComponent::CanUnCrouch() const
 
 	return !bHit;
 }
+#pragma endregion Utulity
 
 // Called when the game starts
 void UCrouchComponent::BeginPlay()

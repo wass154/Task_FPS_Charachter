@@ -25,12 +25,15 @@ public:
 	UPROPERTY()
 	ACharacter* OwnerCharacter;
 
+	// ===== Components =====
 	UPROPERTY()
 	UCharacterMovementComponent* Movement;
 
 	UPROPERTY()
 	UCameraComponent* Camera;
 
+
+	// ===== Initialization =====
 	UFUNCTION(BlueprintCallable, Category = "Jump|Initialize")
 	void InitializeJump();
 

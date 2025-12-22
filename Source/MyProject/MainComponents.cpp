@@ -49,6 +49,35 @@ void UMainComponents::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("StaminaComp was null at runtime. Attempting to find or recover."));
 	}
 
+	if (!CamComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CamComp was null at runtime. Attempting to find or recover."));
+	}
+
+	if (!CrouchComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CrouchComp was null at runtime. Attempting to find or recover."));
+	}
+
+	if (!SlideComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SlideComp was null at runtime. Attempting to find or recover."));
+	}
+
+	if (!VaultComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VaultComp was null at runtime. Attempting to find or recover."));
+	}
+
+	if (!LedgeComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("LedgeComp was null at runtime. Attempting to find or recover."));
+	}
+
+	if (!JumpComp)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("JumpComp was null at runtime. Attempting to find or recover."));
+	}
 }
 
 

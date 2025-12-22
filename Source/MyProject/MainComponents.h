@@ -30,7 +30,6 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	UMovementSystems* MovementSystem;
 
-	//Components Used With Main Component
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
 	UStaminaComponent* StaminaComp;
 

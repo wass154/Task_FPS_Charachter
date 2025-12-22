@@ -35,14 +35,7 @@ void UMovementSystems::Intialize()
 	speed = 300.f;
 
 }
-float UMovementSystems::GetForwardValue() const
-{
-	return ForwardDirectionValue;
-}
-float UMovementSystems::GetRightValue() const
-{
-	return RightDirectionValue;
-}
+
 #pragma endregion Intiliaze
 
 
@@ -105,14 +98,24 @@ void UMovementSystems::UpdateMovementState()
 		TraversalState = EMovement::Running;
 	}
 }
+#pragma endregion MovementDirection
+
+
+#pragma region Utulity
+float UMovementSystems::GetForwardValue() const
+{
+	return ForwardDirectionValue;
+}
+float UMovementSystems::GetRightValue() const
+{
+	return RightDirectionValue;
+}
 bool UMovementSystems::IsPlayerIdle() const
 {
 	return OwningCharacter->GetCharacterMovement()->Velocity.Size() < KINDA_SMALL_NUMBER;
 
 }
-#pragma endregion MovementDirection
-
-
+#pragma endregion Utulity
 
 
 

@@ -17,6 +17,7 @@ UJumpComponent::UJumpComponent()
 	// ...
 }
 
+#pragma region Intialization
 void UJumpComponent::InitializeJump()
 {
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
@@ -31,7 +32,10 @@ void UJumpComponent::InitializeJump()
 		TargetCameraPitch = InitialCameraPitch;
 	}
 }
+#pragma endregion Intialization
 
+
+#pragma region CoreLogicJump
 void UJumpComponent::StartJump()
 {
 	if (GEngine)
@@ -105,15 +109,22 @@ void UJumpComponent::ApplyCameraJump(float DeltaTime)
 	Camera->SetRelativeRotation(CamRot);
 }
 
-bool UJumpComponent::CanJump() const
-{
-	return Movement && Movement->IsMovingOnGround();
-}
-
 void UJumpComponent::ApplyLandingImpact()
 {
 	TargetCameraPitch = InitialCameraPitch + LandingCameraPitch;
 }
+
+#pragma endregion CoreLogicJump
+
+
+#pragma region Utulity
+bool UJumpComponent::CanJump() const
+{
+	return Movement && Movement->IsMovingOnGround();
+}
+#pragma endregion Utulity
+
+
 
 // Called when the game starts
 void UJumpComponent::BeginPlay()
