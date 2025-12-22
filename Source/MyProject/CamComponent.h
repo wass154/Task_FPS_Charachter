@@ -7,6 +7,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "UObject/UObjectGlobals.h"
+#include "EnhancedInputComponent.h"
+#include "InputActionValue.h"
 #include "CamComponent.generated.h"
 
 
@@ -53,9 +55,9 @@ public:
 
 
 	UFUNCTION()
-	void LookUp(float Value);
+	void LookUp(const FInputActionValue& Value);
 	UFUNCTION()
-	void Turn(float Value);
+	void Turn(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void Lean(float Value);

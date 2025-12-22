@@ -63,7 +63,11 @@ public:
 	void ToggleCameraMode();
 
 
-
+	/*Inputs Setup*/
+	UFUNCTION()
+	void OldInputSetup(UInputComponent* PlayerInputComponent);
+	UFUNCTION()
+	void NewInputSetup(UInputComponent* PlayerInputComponent);
 
 
 

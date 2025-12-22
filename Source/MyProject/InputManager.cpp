@@ -64,22 +64,24 @@ void UInputManager::BindAction(UInputAction* Action, ETriggerEvent TriggerEvent,
 	EnhancedInputComponent->BindAction(Action, TriggerEvent, Object, FunctionName);
 }
 
-void UInputManager::BindActionByName(FName ActionName, ETriggerEvent TriggerEvent, UObject* Object, FName FunctionName)
+void UInputManager::InitializeInputComponent(UInputComponent* PlayerInputComponent)
 {
-	if (!EnhancedInputComponent) return;
+	EnhancedInputComponent = CastChecked< UEnhancedInputComponent>(PlayerInputComponent);
 
-	// Find the action in the array by name
-	for (UInputAction* Action : InputActions)
+
+	if (!EnhancedInputComponent)
 	{
-		if (!Action) continue;
+		UE_LOG(LogTemp, Error, TEXT("InputManager: PlayerInputComponent is NOT EnhancedInputComponent"));
+		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, "InputManager: PlayerInputComponent is NOT EnhancedInputComponent Now ...");
 
-		if (Action->GetFName() == ActionName)
-		{
-			EnhancedInputComponent->BindAction(Action, TriggerEvent, Object, FunctionName);
-			break;
-		}
+		return;
 	}
+
+	
+
 }
+
+
 
 
 // Called when the game starts

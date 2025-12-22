@@ -104,6 +104,96 @@ void AMyTraversalCharachter::ToggleCameraMode()
 		: ECameraMode::TPS
 	);
 }
+void AMyTraversalCharachter::OldInputSetup(UInputComponent* PlayerInputComponent)
+{
+	/*OLD INPUTS SECTION */
+
+	if (IsValid(MainComponents->MovementSystem))
+	{
+		//	PlayerInputComponent->BindAxis("MoveForward", MainComponents->MovementSystem, &UMovementSystems::MoveForward);
+		//	PlayerInputComponent->BindAxis("MoveRight", MainComponents->MovementSystem, &UMovementSystems::MoveRight);
+	}
+
+	if (IsValid(MainComponents->StaminaComp))
+	{
+		PlayerInputComponent->BindAction("Sprint", IE_Pressed, MainComponents->StaminaComp, &UStaminaComponent::StartRunning);
+		PlayerInputComponent->BindAction("Sprint", IE_Released, MainComponents->StaminaComp, &UStaminaComponent::StopRunning);
+	}
+
+
+
+	if (IsValid(MainComponents->CamComp))
+	{
+	//	PlayerInputComponent->BindAxis("Look", MainComponents->CamComp, &UCamComponent::LookUp);
+	//	PlayerInputComponent->BindAxis("Turn", MainComponents->CamComp, &UCamComponent::Turn);
+	}
+
+
+	if (IsValid(MainComponents->CrouchComp))
+	{
+		PlayerInputComponent->BindAction("Crouch", IE_Pressed, MainComponents->CrouchComp, &UCrouchComponent::StartCrouch);
+		PlayerInputComponent->BindAction("Crouch", IE_Released, MainComponents->CrouchComp, &UCrouchComponent::StopCrouch);
+	}
+
+
+	if (IsValid(MainComponents->SlideComp))
+	{
+		PlayerInputComponent->BindAction("Slide", IE_Pressed, MainComponents->SlideComp, &USlideComponent::StartSlide);
+	}
+
+	if (IsValid(MainComponents->VaultComp))
+	{
+		PlayerInputComponent->BindAction("Vault", IE_Pressed, MainComponents->VaultComp, &UVaultComponent::TryVault);
+
+	}
+
+
+	if (IsValid(MainComponents->LedgeComp))
+	{
+		PlayerInputComponent->BindAction("Ledge", IE_Pressed, MainComponents->LedgeComp, &ULedgeComponent::TryLedge);
+
+	}
+
+	if (IsValid(MainComponents->JumpComp))
+	{
+		PlayerInputComponent->BindAction("Jump", IE_Pressed, MainComponents->JumpComp, &UJumpComponent::StartJump);
+		PlayerInputComponent->BindAction("Jump", IE_Released, MainComponents->JumpComp, &UJumpComponent::StopJump);
+
+
+	}
+
+
+}
+void AMyTraversalCharachter::NewInputSetup(UInputComponent* PlayerInputComponent)
+{
+
+
+	if (!InputManager) return;
+
+
+	InputManager->IntiliazeInput();
+	InputManager->AddMappingContext(InputManager->DefaultMappingContext);
+	InputManager->InitializeInputComponent(PlayerInputComponent);
+
+	if (InputManager->EnhancedInputComponent)
+	{
+		InputManager->EnhancedInputComponent->BindAction(InputManager->ForwardInput, ETriggerEvent::Triggered, MainComponents->MovementSystem, &UMovementSystems::MoveForward);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->RightInput, ETriggerEvent::Triggered, MainComponents->MovementSystem, &UMovementSystems::MoveRight);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->VaultInput, ETriggerEvent::Started, MainComponents->VaultComp, &UVaultComponent::TryVault);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->SlideInput, ETriggerEvent::Started, MainComponents->SlideComp, &USlideComponent::StartSlide);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->CrouchInput, ETriggerEvent::Started, MainComponents->CrouchComp, &UCrouchComponent::StartCrouch);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->CrouchInput, ETriggerEvent::Completed, MainComponents->CrouchComp, &UCrouchComponent::StopCrouch);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->jumpInput, ETriggerEvent::Started, MainComponents->JumpComp, &UJumpComponent::StartJump);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->RunInput, ETriggerEvent::Started, MainComponents->StaminaComp, &UStaminaComponent::StartRunning);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->RunInput, ETriggerEvent::Completed, MainComponents->StaminaComp, &UStaminaComponent::StopRunning);
+
+		InputManager->EnhancedInputComponent->BindAction(InputManager->CameraTurnInput, ETriggerEvent::Triggered, MainComponents->CamComp, &UCamComponent::Turn);
+		InputManager->EnhancedInputComponent->BindAction(InputManager->CameraLookInput, ETriggerEvent::Triggered, MainComponents->CamComp, &UCamComponent::LookUp);
+
+
+	}
+
+}
 #pragma endregion CameraModeTPS/FPS
 
 
@@ -142,75 +232,11 @@ void AMyTraversalCharachter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	/*OLD INPUTS SECTION OR NEW */
+	//old Input System
+//	OldInputSetup(PlayerInputComponent);
 
-	if (IsValid(MainComponents->MovementSystem))
-	{
-		PlayerInputComponent->BindAxis("MoveForward", MainComponents->MovementSystem, &UMovementSystems::MoveForward);
-		PlayerInputComponent->BindAxis("MoveRight", MainComponents->MovementSystem, &UMovementSystems::MoveRight);
-	}
-
-	if (IsValid(MainComponents->StaminaComp))
-	{
-		PlayerInputComponent->BindAction("Sprint", IE_Pressed, MainComponents->StaminaComp, &UStaminaComponent::StartRunning);
-		PlayerInputComponent->BindAction("Sprint", IE_Released, MainComponents->StaminaComp, &UStaminaComponent::StopRunning);
-	}
-
-
-
-	if (IsValid(MainComponents->CamComp)) 
-	{
-		PlayerInputComponent->BindAxis("Look", MainComponents->CamComp, &UCamComponent::LookUp);
-		PlayerInputComponent->BindAxis("Turn", MainComponents->CamComp, &UCamComponent::Turn);
-	}
-
-
-	if (IsValid(MainComponents->CrouchComp))
-	{
-		PlayerInputComponent->BindAction("Crouch", IE_Pressed, MainComponents->CrouchComp, &UCrouchComponent::StartCrouch);
-		PlayerInputComponent->BindAction("Crouch", IE_Released, MainComponents->CrouchComp, &UCrouchComponent::StopCrouch);
-	}
-
-
-	if (IsValid(MainComponents->SlideComp))
-	{
-		PlayerInputComponent->BindAction("Slide", IE_Pressed, MainComponents->SlideComp, &USlideComponent::StartSlide);
-	}
-
-	if (IsValid(MainComponents->VaultComp))
-	{
-		PlayerInputComponent->BindAction("Vault", IE_Pressed, MainComponents->VaultComp, &UVaultComponent::TryVault);
-
-	}
-
-
-	if (IsValid(MainComponents->LedgeComp))
-	{
-		PlayerInputComponent->BindAction("Ledge", IE_Pressed, MainComponents->LedgeComp, &ULedgeComponent::TryLedge);
-
-	}
-	
-	if (IsValid(MainComponents->JumpComp))
-	{
-		PlayerInputComponent->BindAction("Jump", IE_Pressed, MainComponents->JumpComp, &UJumpComponent::StartJump);
-		PlayerInputComponent->BindAction("Jump", IE_Released, MainComponents->JumpComp, &UJumpComponent::StopJump);
-
-
-	}
-
-
-
-	if (!InputManager) return;
-
-
-	InputManager->IntiliazeInput();
-	InputManager->AddMappingContext(InputManager->DefaultMappingContext);
-
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked< UEnhancedInputComponent>(PlayerInputComponent))
-	{
-
-		EnhancedInputComponent->BindAction(InputManager->TryTestVault, ETriggerEvent::Started, MainComponents->VaultComp, &UVaultComponent::TryVault);
-	}
+	//Enhanced Input System
+	NewInputSetup(PlayerInputComponent);
 
 	
 

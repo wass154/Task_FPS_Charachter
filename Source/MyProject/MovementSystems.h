@@ -71,12 +71,10 @@ public:
 	
 	/* MovementDirection */
 	UFUNCTION()
-	void MoveForward(float forward);
-
+	void MoveForward(const FInputActionValue& Value);
 
 	UFUNCTION()
-	
-	void MoveRight(float right);
+	void MoveRight(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void UpdateControlRotation();

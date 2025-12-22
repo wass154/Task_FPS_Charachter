@@ -106,17 +106,20 @@ void UCamComponent::UpdateCameraRotation(float DeltaTime)
 #pragma endregion Intialization
 
 #pragma region CameraFunctional
-void UCamComponent::LookUp(float Value)
+void UCamComponent::LookUp(const FInputActionValue& Value)
 {
-	if (OwningCharacter && Value != 0.f)
-		OwningCharacter->AddControllerPitchInput(Value * LookUpRate * MouseSensitivity * GetWorld()->GetDeltaSeconds());
+	const float Look = Value.Get<float>();
+	if (OwningCharacter && Look != 0.f)
+		OwningCharacter->AddControllerPitchInput(Look * LookUpRate * MouseSensitivity * GetWorld()->GetDeltaSeconds());
 }
 
-void UCamComponent::Turn(float Value)
+void UCamComponent::Turn(const FInputActionValue& Value)
 {
-	if (OwningCharacter && PlayerController && !FMath::IsNearlyZero(Value))
-		OwningCharacter->AddControllerYawInput(Value * TurnRate * MouseSensitivity * GetWorld()->GetDeltaSeconds());
+	const float Turn = Value.Get<float>();
+	if (OwningCharacter && PlayerController && !FMath::IsNearlyZero(Turn))
+		OwningCharacter->AddControllerYawInput(Turn * TurnRate * MouseSensitivity * GetWorld()->GetDeltaSeconds());
 }
+
 void UCamComponent::Lean(float Value)
 {
 	if (!CameraBoomRef) return;

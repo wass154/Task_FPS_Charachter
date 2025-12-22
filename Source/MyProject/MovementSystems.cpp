@@ -47,22 +47,23 @@ float UMovementSystems::GetRightValue() const
 
 
 #pragma region MovementDirection
-void UMovementSystems::MoveForward(float forward)
+void UMovementSystems::MoveForward(const FInputActionValue& Value)
 {
-
-	if (forward != 0.0f && OwningCharacter)
+	float ForwardValue = Value.Get<float>();
+	if (ForwardValue != 0.0f && OwningCharacter)
 	{
-		ForwardDirectionValue = forward;
-		OwningCharacter->AddMovementInput(FRotationMatrix(FRotator(0, OwningCharacter->GetControlRotation().Yaw, 0)).GetUnitAxis(EAxis::X), forward);
+		ForwardDirectionValue = ForwardValue;
+		OwningCharacter->AddMovementInput(FRotationMatrix(FRotator(0, OwningCharacter->GetControlRotation().Yaw, 0)).GetUnitAxis(EAxis::X), ForwardValue);
 
 	}
 }
-void UMovementSystems::MoveRight(float right)
+void UMovementSystems::MoveRight(const FInputActionValue& Value)
 {
-	if (right != 0.0f && OwningCharacter)
+	float RightValue = Value.Get<float>();
+	if (RightValue != 0.0f && OwningCharacter)
 	{
-		RightDirectionValue = right;
-		OwningCharacter->AddMovementInput(FRotationMatrix(FRotator(0, OwningCharacter->GetControlRotation().Yaw, 0)).GetUnitAxis(EAxis::Y), right);
+		RightDirectionValue = RightValue;
+		OwningCharacter->AddMovementInput(FRotationMatrix(FRotator(0, OwningCharacter->GetControlRotation().Yaw, 0)).GetUnitAxis(EAxis::Y), RightValue);
 
 	}
 }

@@ -1,4 +1,4 @@
-#include "VaultComponent.h"
+﻿#include "VaultComponent.h"
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraComponent.h"
@@ -95,145 +95,161 @@ void UVaultComponent::TryVault()
 
 EVault UVaultComponent::DecideVaultType(float Height, float Depth) const
 {
-	if (Height > MaxVaultHeight)
+	if (Height > MaxMantleHeight)
+	{
 		return EVault::Ledging;
+	}
 
-	// Vault if height and depth allow
-	if (Height >= MinHeight && Height <= MaxVaultHeight && Depth <= MaxVaultDepth)
-		return EVault::Vaulting;
 
-	// Mantle if obstacle is high enough to require mantling and depth is big
-	if (Height >= MaxVaultHeight && Height <= MaxMantleHeight)
+	if (Height > MaxVaultHeight && Height <= MaxMantleHeight)
+	{
 		return EVault::Mantling;
+	}
+
+
+	if (Height >= MinHeight && Height <= MaxVaultHeight && Depth <= MaxVaultDepth)
+	{
+		return EVault::Vaulting;
+	}
 
 	return EVault::None;
 }
 
 /* ================= TRACE ================= */
 
-bool UVaultComponent::CheckVaultableObstacle(FHitResult& OutHit, float& OutHeight, float& OutDepth, EVaultType& OutVaultType)
+bool UVaultComponent::CheckVaultableObstacle(
+	FHitResult& Hit,
+	float& OutHeight,
+	float& OutDepth
+)
 {
-	if (!OwnerCharacter || !Capsule) return false;
+	if (!OwnerCharacter || !Capsule)
+		return false;
 
-	// 1. SETUP DATA
-	FVector CharacterLocation = OwnerCharacter->GetActorLocation();
-	FVector Forward = OwnerCharacter->GetActorForwardVector();
-	FVector Down = FVector::DownVector;
-	float CapsuleBaseZ = CharacterLocation.Z - Capsule->GetScaledCapsuleHalfHeight();
-
-	// ---------------------------------------------------------
-	// 2. WALL TRACE (Forward) - Find the wall
-	// ---------------------------------------------------------
-	const FVector Start = CharacterLocation;
-	const FVector End = Start + (Forward * TraceDistance);
+	UWorld* World = GetWorld();
+	if (!World)
+		return false;
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(OwnerCharacter);
 
-	FHitResult WallHit;
-	// Sweep a small sphere forward to find the wall
-	bool bHitWall = GetWorld()->SweepSingleByChannel(
-		WallHit,
-		Start,
-		End,
+	const FVector ActorLocation = OwnerCharacter->GetActorLocation();
+	const FVector ActorForward = OwnerCharacter->GetActorForwardVector();
+
+	/* =====================================================
+	   1) FIRST TRACE – FIND WALL
+	   ===================================================== */
+
+	const FVector WallStart = ActorLocation + FVector(0.f, 0.f, MinHeight);
+	const FVector WallEnd = WallStart + ActorForward * TraceDistance;
+
+	bool bWallHit = World->SweepSingleByChannel(
+		Hit,
+		WallStart,
+		WallEnd,
 		FQuat::Identity,
 		ECC_Visibility,
-		FCollisionShape::MakeSphere(10.0f),
+		FCollisionShape::MakeSphere(TraceRadius),
 		Params
 	);
 
-	if (!bHitWall || !WallHit.GetActor())
-	{
+	DrawDebugLine(World, WallStart, WallEnd, FColor::Green, false, 1.5f, 0, 2.f);
+
+	if (!bWallHit)
 		return false;
-	}
 
-	// ---------------------------------------------------------
-	// 3. HEIGHT TRACE (Downward) - Find the top of the wall
-	// ---------------------------------------------------------
-	// We move forward slightly past the wall hit, and trace down from above
-	FVector HeightStart = WallHit.Location + (Forward * 15.0f) + FVector(0, 0, MaxMantleHeight + 50.0f);
-	FVector HeightEnd = WallHit.Location + (Forward * 15.0f); // Trace to level of impact
+	/* =====================================================
+	   2) WALL NORMAL → WALL FORWARD
+	   ===================================================== */
 
-	FHitResult HeightHit;
-	// Trace down to find the surface
-	bool bHitTop = GetWorld()->LineTraceSingleByChannel(HeightHit, HeightStart, HeightEnd, ECC_Visibility, Params);
+	const FVector WallNormal = Hit.ImpactNormal.GetSafeNormal();
+	const FVector WallForward = (-WallNormal).GetSafeNormal();
 
-	DrawDebugLine(GetWorld(), HeightStart, HeightEnd, FColor::Orange, false, 2.0f);
+	// Push inside wall to avoid missing top edge
+	const FVector WallPoint = Hit.ImpactPoint + WallForward * 5.f;
 
-	if (!bHitTop)
-	{
-		// We hit a wall, but nothing flat on top (maybe a slope or ceiling?)
+	/* =====================================================
+	   3) TOP TRACE – FIND WALL TOP
+	   ===================================================== */
+
+	FHitResult TopHit;
+
+	const FVector TopTraceStart = WallPoint + FVector(0.f, 0.f, 900.f);
+	const FVector TopTraceEnd = WallPoint - FVector(0.f, 0.f, 900.f);
+
+	bool bTopHit = World->LineTraceSingleByChannel(
+		TopHit,
+		TopTraceStart,
+		TopTraceEnd,
+		ECC_Visibility,
+		Params
+	);
+
+	DrawDebugLine(World, TopTraceStart, TopTraceEnd, FColor::Yellow, false, 1.5f, 0, 2.f);
+
+	if (!bTopHit)
 		return false;
-	}
 
-	// CALCULATE HEIGHT
-	// Height is the Top Surface Z minus the Player's Feet Z
-	OutHeight = HeightHit.ImpactPoint.Z - CapsuleBaseZ;
+	/* =====================================================
+	   4) HEIGHT = TOP HIT − WALL HIT (Z ONLY)
+	   ===================================================== */
 
-	// ---------------------------------------------------------
-	// 4. DEPTH TRACE - Check thickness
-	// ---------------------------------------------------------
-	// We check a point further ahead (e.g., 100 units or your '10' threshold)
-	// If we trace down there and hit nothing, it's a thin object (Vault).
-	// If we hit something, it's a thick platform.
+	OutHeight = TopHit.ImpactPoint.Z - Hit.ImpactPoint.Z;
+	VaultHeight = OutHeight;
 
-	FVector DepthCheckStart = HeightHit.ImpactPoint + (Forward * 15.0f); // Check 15 units past the front edge
-	FVector DepthCheckEnd = DepthCheckStart - FVector(0, 0, 50.0f);     // Small check down
+	/* =====================================================
+	   5) DEPTH TRACE (OPTIONAL)
+	   ===================================================== */
+
+	   /* =====================================================
+		  5) DEPTH TRACE – LANDING SPACE
+		  ===================================================== */
 
 	FHitResult DepthHit;
-	bool bHitBack = GetWorld()->LineTraceSingleByChannel(DepthHit, DepthCheckStart, DepthCheckEnd, ECC_Visibility, Params);
 
-	// If we hit back, the depth is large (at least 15). If we missed, it's thin.
-	// Ideally, you perform multiple traces or one long trace to find exact depth, 
-	// but here we simply check if it exists past the threshold.
-	OutDepth = bHitBack ? 50.0f : 5.0f; // Simplified: 50 = Thick, 5 = Thin
+	const FVector DepthStart =
+		TopHit.ImpactPoint
+		+ FVector(0.f, 0.f, 20.f)   // above top surface
+		+ WallForward * 30.f;       // past wall edge
 
-	DrawDebugLine(GetWorld(), DepthCheckStart, DepthCheckEnd, FColor::Cyan, false, 2.0f);
+	const FVector DepthEnd =
+		DepthStart - FVector(0.f, 0.f, 350.f);
 
-	// ---------------------------------------------------------
-	// 5. CLASSIFICATION LOGIC (User Rules)
-	// ---------------------------------------------------------
+	bool bDepthHit = World->LineTraceSingleByChannel(
+		DepthHit,
+		DepthStart,
+		DepthEnd,
+		ECC_Visibility,
+		Params
+	);
 
-	// Default to false/invalid
-	OutVaultType = EVaultType::None; // Assuming you have an Enum for this
-	bool bIsVaultable = false;
+	DrawDebugLine(World, DepthStart, DepthEnd, FColor::Blue, false, 1.5f, 0, 2.f);
 
-	// Logic: Height < 20 is Vault
-	if (OutHeight < 20.0f)
-	{
-		OutVaultType = EVaultType::Vault;
-		bIsVaultable = true;
-	}
-	// Logic: Height < 50 is Mantle
-	else if (OutHeight < 50.0f)
-	{
-		OutVaultType = EVaultType::Mantle;
-		bIsVaultable = true;
-	}
-	// Logic: Height > 50 is Ledge (Climb)
-	else
-	{
-		OutVaultType = EVaultType::Ledge; // Or Climb
-		bIsVaultable = true;
-	}
+	OutDepth = bDepthHit
+		? FVector::Dist2D(DepthStart, DepthHit.ImpactPoint)
+		: MaxVaultDepth;
 
-	// Logic: Depth Override 
-	// "If depth < 10 is vault, if > 10 is mantle"
-	// We check if we missed the back trace (implying depth is very small/thin)
-	if (!bHitBack)
-	{
-		// Thin fence or railing -> Force Vault
-		OutVaultType = EVaultType::Vault;
-	}
+	VaultDepth = OutDepth;
 
-	// Logging for Debug
-	UE_LOG(LogTemp, Warning, TEXT("H: %.2f | D: %s | Type: %d"),
-		OutHeight,
-		bHitBack ? TEXT(">10") : TEXT("<10"),
-		(int32)OutVaultType);
+	/* =====================================================
+	   6) DEBUG
+	   ===================================================== */
 
-	OutHit = WallHit; // Return the wall hit for location data
-	return bIsVaultable;
+	DrawDebugString(
+		World,
+		Hit.ImpactPoint + FVector(0.f, 0.f, 80.f),
+		FString::Printf(TEXT("H: %.1f  D: %.1f"), OutHeight, OutDepth),
+		nullptr,
+		FColor::Red,
+		1.5f,
+		true
+	);
+
+	/* =====================================================
+	   7) VALIDATE HEIGHT
+	   ===================================================== */
+
+	return OutHeight >= MinHeight && OutHeight <= MaxMantleHeight;
 }
 
 

@@ -34,10 +34,35 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
 	TArray<UInputAction*> InputActions;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
+	UInputAction* ForwardInput;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
-	UInputAction* TryTestVault;
+	UInputAction* RightInput;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
+	UInputAction* jumpInput;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
+	UInputAction* CrouchInput;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
+	UInputAction* SlideInput;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
+	UInputAction* VaultInput;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
+	UInputAction* CameraTurnInput;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
+	UInputAction* CameraLookInput;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input|Actions")
+	UInputAction* RunInput;
 
 
 
@@ -55,17 +80,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void BindAction(UInputAction* Action, ETriggerEvent TriggerEvent, UObject* Object, FName FunctionName);
 
-	UFUNCTION(BlueprintCallable, Category = "Input")
-	void BindActionByName(FName ActionName, ETriggerEvent TriggerEvent, UObject* Object, FName FunctionName);
+	UFUNCTION()
+	void InitializeInputComponent(UInputComponent* PlayerInputComponent);
 
 
-
-private:
 	UPROPERTY()
 	UEnhancedInputLocalPlayerSubsystem* InputSubsystem;
 
 	UPROPERTY()
 	UEnhancedInputComponent* EnhancedInputComponent;
+
+
+private:
+
 
 protected:
 	// Called when the game starts
