@@ -114,6 +114,11 @@ void UJumpComponent::ApplyLandingImpact()
 	TargetCameraPitch = InitialCameraPitch + LandingCameraPitch;
 }
 
+bool UJumpComponent::IsJumping() const
+{
+	return bIsJumping;
+}
+
 #pragma endregion CoreLogicJump
 
 

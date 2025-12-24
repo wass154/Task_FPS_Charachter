@@ -93,6 +93,11 @@ public:
 	// ===== Internal =====
 	void ApplyLandingImpact();
 
+
+	//========Utulity====
+	UFUNCTION(BlueprintPure, Category = "Jump")
+	bool IsJumping() const;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

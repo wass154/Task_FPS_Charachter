@@ -130,6 +130,11 @@ float UStaminaComponent::GetStaminaPercentage() const
 	return CurrentStamina > 0 ? (CurrentStamina / MaxStamina) * 100.f : 0.f;
 }
 
+float UStaminaComponent::GetStaminaNormalized() const
+{
+	return FMath::Clamp(CurrentStamina / MaxStamina, 0.f, 1.f);
+}
+
 #pragma endregion Utulity
 
 

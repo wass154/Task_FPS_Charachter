@@ -89,6 +89,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetStaminaPercentage() const;
 
+
+	UFUNCTION(BlueprintPure, Category = "Stamina")
+	float GetStaminaNormalized() const;
+
 	
 
 private:
